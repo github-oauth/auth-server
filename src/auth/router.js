@@ -6,17 +6,20 @@ const authRouter = express.Router();
 const User = require('./users-model.js');
 const auth = require('./middleware.js');
 const oauth = require('./oauth/google.js');
+const github = require('./oauth/github.js');
 
 authRouter.post('/signup', (req, res, next) => {
   let user = new User(req.body);
-  user.save()
-    .then( (user) => {
+  user
+    .save()
+    .then(user => {
       req.token = user.generateToken();
       req.user = user;
       res.set('token', req.token);
       res.cookie('auth', req.token);
       res.send(req.token);
-    }).catch(next);
+    })
+    .catch(next);
 });
 
 authRouter.post('/signin', auth, (req, res, next) => {
@@ -24,9 +27,15 @@ authRouter.post('/signin', auth, (req, res, next) => {
   res.send(req.token);
 });
 
-authRouter.get('/oauth', (req,res,next) => {
+authRouter.get('/github-oauth', (req, res, next) => {
+  github(req, res, next).then(result => {
+    res.status(200).send('I win');
+  });
+});
+
+authRouter.get('/oauth', (req, res, next) => {
   oauth(req)
-    .then( token => {
+    .then(token => {
       res.status(200).send(token);
     })
     .catch(next);

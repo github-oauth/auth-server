@@ -7,6 +7,10 @@ const User = require('./users-model.js');
 const auth = require('./middleware.js');
 const oauth = require('./oauth/github.js');
 
+authRouter.get('/', (req, res, next) => {
+  res.send('Up and running...');
+});
+
 authRouter.post('/signup', (req, res, next) => {
   let user = new User(req.body);
   user

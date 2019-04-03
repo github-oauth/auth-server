@@ -5,8 +5,7 @@ const authRouter = express.Router();
 
 const User = require('./users-model.js');
 const auth = require('./middleware.js');
-const oauth = require('./oauth/google.js');
-const github = require('./oauth/github.js');
+const oauth = require('./oauth/github.js');
 
 authRouter.post('/signup', (req, res, next) => {
   let user = new User(req.body);
@@ -25,12 +24,6 @@ authRouter.post('/signup', (req, res, next) => {
 authRouter.post('/signin', auth, (req, res, next) => {
   res.cookie('auth', req.token);
   res.send(req.token);
-});
-
-authRouter.get('/github-oauth', (req, res, next) => {
-  github(req, res, next).then(result => {
-    res.status(200).send('I win');
-  });
 });
 
 authRouter.get('/oauth', (req, res, next) => {

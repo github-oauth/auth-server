@@ -1,8 +1,12 @@
 'use strict';
+
 const superagent = require('superagent');
+const Users = require('../users-model.js');
 
 const authorize = (req, res, next) => {
+  console.log('authorizing....');
   const { code } = req.query;
+  console.log('code:', code);
 
   const access_token = `https://github.com/login/oauth/access_token`;
   const options = {
@@ -19,15 +23,19 @@ const authorize = (req, res, next) => {
       return access_token;
     })
     .then(access_token => {
+      console.log('access_token:', access_token);
       const link = `https://api.github.com/user?access_token=${access_token}`;
-      console.log('link:', link);
       return superagent
         .get(link)
         .set('Authorization', `Bearer ${access_token}`)
-        .then(result => console.log('body:', result.body));
+        .then(result => {
+          console.log('result.body:', result.body);
+          return result.body;
+        });
     })
-
-    .catch(console.error);
+    .then(user => Users.createFromOauth(user.email))
+    .then(actualUser => actualUser.generateToken())
+    .catch(error => error);
 };
 
 module.exports = authorize;

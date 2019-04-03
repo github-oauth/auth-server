@@ -4,7 +4,9 @@ const superagent = require('superagent');
 const Users = require('../users-model.js');
 
 const authorize = (req, res, next) => {
+  console.log('Authorization initiated.');
   const { code } = req.query;
+  console.log('Code received:', code);
 
   const access_token = `https://github.com/login/oauth/access_token`;
   const options = {
@@ -18,6 +20,7 @@ const authorize = (req, res, next) => {
     .send(options)
     .then(result => {
       const { access_token } = result.body;
+      console.log('Received access_token:', access_token);
       return access_token;
     })
     .then(access_token => {
@@ -26,6 +29,7 @@ const authorize = (req, res, next) => {
         .get(link)
         .set('Authorization', `Bearer ${access_token}`)
         .then(result => {
+          console.log('User result from GitHub:', result.body);
           return result.body;
         });
     })

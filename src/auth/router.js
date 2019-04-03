@@ -27,8 +27,10 @@ authRouter.post('/signin', auth, (req, res, next) => {
 });
 
 authRouter.get('/oauth', (req, res, next) => {
+  console.log('Received a request at `/oauth`');
   oauth(req)
     .then(token => {
+      console.log('Token passed to routes:', token);
       res.status(200).send(token);
     })
     .catch(next);
